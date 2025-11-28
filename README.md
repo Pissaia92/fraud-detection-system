@@ -23,7 +23,7 @@ financial impact immediately on a Command Center Dashboard.
 * **Containerization:** Docker & Docker Compose.
 
 ## 📊 Dashboard Preview
-![Dashboard Preview](./src/assets/grafana-v2.gif)
+![Dashboard Preview] (https://raw.githubusercontent.com/Pissaia92/fraud-monitor/refs/heads/main/src/assets/grafana-v2.gif)
 
 ## ⚡ How to Run
 

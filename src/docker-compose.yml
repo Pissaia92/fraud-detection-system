@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # 1. temp series database
+  influxdb:
+    image: influxdb:2.7
+    container_name: fraud_influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      # Cstart autoconfig
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword123
+      - DOCKER_INFLUXDB_INIT_ORG=fintech_org
+      - DOCKER_INFLUXDB_INIT_BUCKET=fraud_bucket
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-super-secret-auth-token
+    volumes:
+      - influxdb_data:/var/lib/influxdb2
+
+  # 2. Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fraud_grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      - influxdb
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  # 3.data gen (python)
+  app-producer:
+    build: .
+    container_name: fraud_producer
+    depends_on:
+      - influxdb
+    environment:
+      - INFLUXDB_URL=http://influxdb:8086
+      - INFLUXDB_TOKEN=my-super-secret-auth-token
+      - INFLUXDB_ORG=fintech_org
+      - INFLUXDB_BUCKET=fraud_bucket
+    restart: always
+
+volumes:
+  influxdb_data:
+  grafana_data:
